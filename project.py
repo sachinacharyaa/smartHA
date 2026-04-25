@@ -1,14 +1,13 @@
 import json
+import os
 import tkinter as tk
 import threading
+import urllib.error
+import urllib.request
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from tkinter import messagebox, ttk
-try:
-    import google.generativeai as genai
-except ImportError:
-    genai = None
 
 
 DATA_FILE = Path(__file__).with_name("health_records.json")
@@ -27,7 +26,7 @@ SYMPTOM_OPTIONS = [
     "Acidity",
     "Body weakness",
 ]
-GEMINI_API_KEY = "AIzaSyCkpKH2V37vtyUKsr5DAXpxay09Ak6SAHw"
+SERPER_API_KEY = "86f1eeca7c50e8786a426693edd336dac0ff2e0c"
 
 
 @dataclass
@@ -142,35 +141,121 @@ def local_advice(bmi_status: str, fever_status: str, symptoms: list, hereditary_
     return " ".join(advice_parts)
 
 
-def gemini_suggestion(payload_text: str):
-    if genai is None:
-        return "Gemini SDK is not installed. Install with: pip install google-generativeai"
-    if not GEMINI_API_KEY.strip():
-        return "Gemini API key is missing in backend configuration."
+def doctor_style_response(
+    *,
+    bmi_status: str,
+    fever_status: str,
+    temp_c: float,
+    symptoms: list,
+    hereditary_condition: str,
+    recommended_doctor: str,
+    web_context: str,
+):
+    symptoms_text = ", ".join(symptoms) if symptoms else "no major symptoms selected"
+    urgent = temp_c >= 39.0 or any(s in symptoms for s in ["Chest pain", "Shortness of breath"])
+    moderate = fever_status == "Mild Fever" or any(s in symptoms for s in ["Cough", "Vomiting", "Stomach pain"])
+
+    if urgent:
+        priority = "HIGH PRIORITY"
+        action_window = "Seek same-day in-person care or emergency support."
+    elif moderate:
+        priority = "MODERATE PRIORITY"
+        action_window = "Book a doctor consultation within 24 hours."
+    else:
+        priority = "ROUTINE PRIORITY"
+        action_window = "Start home care and monitor closely for 24-48 hours."
+
+    home_steps = [
+        "- Hydrate well and take adequate rest.",
+        "- Monitor temperature every 6-8 hours and note symptom changes.",
+        "- Eat light, easy-to-digest meals until symptoms settle.",
+    ]
+    if fever_status != "No Fever":
+        home_steps.append("- For fever discomfort, discuss safe antipyretic use with your pharmacist/doctor.")
+    if hereditary_condition == "Yes":
+        home_steps.append("- Because of hereditary risk, share family history during consultation.")
+
+    red_flags = [
+        "- Breathing difficulty, chest pain, confusion, persistent vomiting.",
+        "- Fever >= 103 F (39.4 C), seizure, severe dehydration, or worsening weakness.",
+        "- Any rapid worsening despite initial home care.",
+    ]
+
+    web_line = ""
+    if web_context.strip():
+        web_line = f"\nSupporting web check: {web_context}\n"
+
+    return (
+        "CLINICAL GUIDANCE (PRELIMINARY)\n"
+        f"Priority: {priority}\n"
+        f"Current findings: Temperature {temp_c:.1f} C ({fever_status}), BMI category {bmi_status}, symptoms: {symptoms_text}.\n"
+        f"Most suitable doctor: {recommended_doctor}\n\n"
+        "What to do now:\n"
+        f"{action_window}\n"
+        + "\n".join(home_steps)
+        + "\n\n"
+        "Go to urgent care immediately if:\n"
+        + "\n".join(red_flags)
+        + "\n"
+        + web_line
+        + "\nNote: This is supportive triage guidance, not a confirmed diagnosis."
+    )
+
+
+def serper_suggestion(payload_text: str):
+    api_key = (SERPER_API_KEY or "").strip() or os.getenv("SERPER_API_KEY", "").strip()
+    if not api_key:
+        return "Serper API key is missing in backend configuration."
+
+    # Serper search works best with concise query text.
+    query = "health symptoms guidance " + " ".join(payload_text.split())[:320]
+    request_payload = {"q": query}
     try:
-        genai.configure(api_key=GEMINI_API_KEY)
-        models = ["gemini-2.0-flash", "gemini-flash-latest", "gemini-2.5-flash"]
-        last_error = "Unknown Gemini error."
-        for model_name in models:
-            try:
-                model = genai.GenerativeModel(model_name)
-                response = model.generate_content(payload_text)
-                text = (response.text or "").strip()
-                if text:
-                    return text
-                last_error = f"Gemini returned empty response using {model_name}."
-            except Exception as model_exc:
-                message = str(model_exc)
-                if "not found" in message.lower():
-                    last_error = f"Model not available: {model_name}."
-                    continue
-                if "quota" in message.lower() or "resource_exhausted" in message.lower() or "429" in message:
-                    return "Gemini quota exceeded for this API key/project. Enable billing or use a key with active quota."
-                last_error = message
-                continue
-        return f"Gemini unavailable right now. {last_error}"
+        req = urllib.request.Request(
+            url="https://google.serper.dev/search",
+            data=json.dumps(request_payload).encode("utf-8"),
+            headers={
+                "Content-Type": "application/json",
+                "X-API-KEY": api_key,
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=40) as response:
+            raw = response.read().decode("utf-8")
+        parsed = json.loads(raw)
+
+        snippets = []
+        answer_box = parsed.get("answerBox") or {}
+        if answer_box.get("answer"):
+            snippets.append(str(answer_box["answer"]).strip())
+        if answer_box.get("snippet"):
+            snippets.append(str(answer_box["snippet"]).strip())
+
+        for item in (parsed.get("organic") or [])[:3]:
+            title = (item.get("title") or "Untitled").strip()
+            snippet = (item.get("snippet") or "").strip()
+            if snippet:
+                snippets.append(f"{title}: {snippet}")
+
+        if not snippets:
+            return "Serper returned no useful search results for these symptoms."
+        # Keep only short context for doctor-style synthesis.
+        compact = " | ".join(snippets[:2])
+        return compact[:420]
+    except urllib.error.HTTPError as exc:
+        try:
+            details = exc.read().decode("utf-8")
+        except Exception:
+            details = str(exc)
+        if exc.code in {401, 403}:
+            return "Serper authentication failed. Please verify your API key."
+        if exc.code == 429:
+            return "Serper rate limit reached. Please check your plan and usage."
+        return f"Serper API error ({exc.code}): {details}"
+    except urllib.error.URLError as exc:
+        return f"Network error while contacting Serper: {exc}"
     except Exception as exc:
-        return f"Gemini call failed: {exc}"
+        return f"Serper call failed: {exc}"
 
 
 def build_app():
@@ -339,7 +424,16 @@ def build_app():
             f"Hereditary condition: {hereditary_var.get()}\n"
             f"Recommended doctor type: {recommended_doctor}\n"
         )
-        ai_suggestion = gemini_suggestion(prompt)
+        web_context = serper_suggestion(prompt)
+        ai_suggestion = doctor_style_response(
+            bmi_status=bmi_status,
+            fever_status=fever_status,
+            temp_c=temp_c,
+            symptoms=symptoms,
+            hereditary_condition=hereditary_var.get(),
+            recommended_doctor=recommended_doctor,
+            web_context=web_context,
+        )
 
         result = HealthResult(
             bmi=round(bmi, 2),
@@ -429,7 +523,7 @@ def build_app():
                 f"Hereditary Condition: {record.hereditary_condition or 'None'}\n"
                 f"Symptoms: {', '.join(record.symptoms) if record.symptoms else 'None'}\n\n"
                 f"Advice:\n{record.result.advice}\n\n"
-                f"Gemini Suggestion:\n{record.result.ai_suggestion}\n"
+                f"Web Suggestion (Serper):\n{record.result.ai_suggestion}\n"
             )
             set_result_text(output_text)
             messagebox.showinfo("Result Ready", "Your health report is ready.")

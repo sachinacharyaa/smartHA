@@ -23,5 +23,182 @@
       "advice": "Consult a doctor for a structured weight management plan. BMI status: Obese. Fever check: Mild Fever. Symptoms noted: Fever, Cough, Chest pain. This system provides guidance only, not a medical diagnosis.",
       "ai_suggestion": "Gemini quota exceeded for this API key/project. Enable billing or use a key with active quota."
     }
+  },
+  {
+    "created_at": "2026-04-25T16:28:28",
+    "user": {
+      "username": "Hardik",
+      "logged_in_at": "2026-04-25T16:27:45"
+    },
+    "weight_kg": 70.0,
+    "height_cm": 175.0,
+    "body_temp_c": 37.0,
+    "blood_group": "B+",
+    "hereditary_condition": "No",
+    "symptoms": [
+      "Fever",
+      "Cough",
+      "Chest pain"
+    ],
+    "result": {
+      "bmi": 22.86,
+      "bmi_status": "Normal Weight",
+      "fever_status": "No Fever",
+      "recommended_doctor": "Cardiologist",
+      "advice": "Maintain a balanced diet and regular exercise. BMI status: Normal Weight. Fever check: No Fever. Symptoms noted: Fever, Cough, Chest pain. This system provides guidance only, not a medical diagnosis.",
+      "ai_suggestion": "Gemini quota exceeded for this API key/project. Enable billing or use a key with active quota."
+    }
+  },
+  {
+    "created_at": "2026-04-25T21:25:21",
+    "user": {
+      "username": "saurav",
+      "logged_in_at": "2026-04-25T21:24:56"
+    },
+    "weight_kg": 69.0,
+    "height_cm": 173.0,
+    "body_temp_c": 39.0,
+    "blood_group": "A+",
+    "hereditary_condition": "No",
+    "symptoms": [
+      "Fever",
+      "Chest pain",
+      "Itching"
+    ],
+    "result": {
+      "bmi": 23.05,
+      "bmi_status": "Normal Weight",
+      "fever_status": "High Fever",
+      "recommended_doctor": "Cardiologist",
+      "advice": "Maintain a balanced diet and regular exercise. BMI status: Normal Weight. Fever check: High Fever. Symptoms noted: Fever, Chest pain, Itching. This system provides guidance only, not a medical diagnosis.",
+      "ai_suggestion": "Gemini unavailable right now. 400 API key not valid. Please pass a valid API key. [reason: \"API_KEY_INVALID\"\ndomain: \"googleapis.com\"\nmetadata {\n  key: \"service\"\n  value: \"generativelanguage.googleapis.com\"\n}\n, locale: \"en-US\"\nmessage: \"API key not valid. Please pass a valid API key.\"\n]"
+    }
+  },
+  {
+    "created_at": "2026-04-25T21:32:35",
+    "user": {
+      "username": "prabesh",
+      "logged_in_at": "2026-04-25T21:32:12"
+    },
+    "weight_kg": 70.0,
+    "height_cm": 178.0,
+    "body_temp_c": 40.0,
+    "blood_group": "B-",
+    "hereditary_condition": "No",
+    "symptoms": [
+      "Fever",
+      "Chest pain",
+      "Vomiting",
+      "Body weakness"
+    ],
+    "result": {
+      "bmi": 22.09,
+      "bmi_status": "Normal Weight",
+      "fever_status": "High Fever",
+      "recommended_doctor": "Cardiologist",
+      "advice": "Maintain a balanced diet and regular exercise. BMI status: Normal Weight. Fever check: High Fever. Symptoms noted: Fever, Chest pain, Vomiting, Body weakness. This system provides guidance only, not a medical diagnosis.",
+      "ai_suggestion": "Gemini quota exceeded for this API key/project. Enable billing or use a key with active quota."
+    }
+  },
+  {
+    "created_at": "2026-04-25T21:35:42",
+    "user": {
+      "username": "pratik",
+      "logged_in_at": "2026-04-25T21:35:15"
+    },
+    "weight_kg": 58.0,
+    "height_cm": 168.0,
+    "body_temp_c": 36.0,
+    "blood_group": "O+",
+    "hereditary_condition": "No",
+    "symptoms": [
+      "Shortness of breath",
+      "Skin rash",
+      "Itching"
+    ],
+    "result": {
+      "bmi": 20.55,
+      "bmi_status": "Normal Weight",
+      "fever_status": "No Fever",
+      "recommended_doctor": "Dermatologist",
+      "advice": "Maintain a balanced diet and regular exercise. BMI status: Normal Weight. Fever check: No Fever. Symptoms noted: Shortness of breath, Skin rash, Itching. This system provides guidance only, not a medical diagnosis.",
+      "ai_suggestion": "Gemini quota exceeded for this API key/project. Enable billing or use a key with active quota."
+    }
+  },
+  {
+    "created_at": "2026-04-25T21:42:25",
+    "user": {
+      "username": "ganesh",
+      "logged_in_at": "2026-04-25T21:41:58"
+    },
+    "weight_kg": 77.0,
+    "height_cm": 168.0,
+    "body_temp_c": 41.0,
+    "blood_group": "A+",
+    "hereditary_condition": "No",
+    "symptoms": [
+      "Fever",
+      "Chest pain",
+      "Itching"
+    ],
+    "result": {
+      "bmi": 27.28,
+      "bmi_status": "Overweight",
+      "fever_status": "High Fever",
+      "recommended_doctor": "Cardiologist",
+      "advice": "Improve activity and food habits; monitor weight regularly. BMI status: Overweight. Fever check: High Fever. Symptoms noted: Fever, Chest pain, Itching. This system provides guidance only, not a medical diagnosis.",
+      "ai_suggestion": "OpenAI quota/rate limit reached. Please check billing and usage limits."
+    }
+  },
+  {
+    "created_at": "2026-04-25T21:47:03",
+    "user": {
+      "username": "hariom",
+      "logged_in_at": "2026-04-25T21:46:43"
+    },
+    "weight_kg": 83.0,
+    "height_cm": 185.0,
+    "body_temp_c": 43.0,
+    "blood_group": "A+",
+    "hereditary_condition": "No",
+    "symptoms": [
+      "Fever",
+      "Cough",
+      "Chest pain",
+      "Headache"
+    ],
+    "result": {
+      "bmi": 24.25,
+      "bmi_status": "Normal Weight",
+      "fever_status": "High Fever",
+      "recommended_doctor": "Cardiologist",
+      "advice": "Maintain a balanced diet and regular exercise. BMI status: Normal Weight. Fever check: High Fever. Symptoms noted: Fever, Cough, Chest pain, Headache. This system provides guidance only, not a medical diagnosis.",
+      "ai_suggestion": "Web guidance (non-diagnostic):\n- When to go to Urgent Care for a Fever: When is a Fever Serious?: Head to the ER if your fever reaches 105\u00b0F or higher or if you have severe additional symptoms or chronic conditions. These symptoms include ... (https://doctorondemand.com/blog/cold-and-flu/when-to-go-to-urgent-care-for-fever/)\n- When to Seek Care for a Fever | Hackensack Meridian Health: \u201cIf a fever lasts for more than three days, spikes above 103\u00b0F, or is accompanied by symptoms like confusion, difficulty breathing or a rash, ... (https://hackensackmeridianhealth.org/en/healthier-you/2020/09/17/when-to-seek-care-for-a-fever)\n- Fever \u2014 Know When to Go to the ER - Emergency Physicians: Fever by itself is not an illness, but a symptom for a range of medical conditions. (https://www.emergencyphysicians.org/article/know-when-to-go/fever)"
+    }
+  },
+  {
+    "created_at": "2026-04-25T21:49:58",
+    "user": {
+      "username": "krishna",
+      "logged_in_at": "2026-04-25T21:49:41"
+    },
+    "weight_kg": 80.0,
+    "height_cm": 180.0,
+    "body_temp_c": 39.0,
+    "blood_group": "A+",
+    "hereditary_condition": "No",
+    "symptoms": [
+      "Cough",
+      "Headache",
+      "Itching"
+    ],
+    "result": {
+      "bmi": 24.69,
+      "bmi_status": "Normal Weight",
+      "fever_status": "High Fever",
+      "recommended_doctor": "Dermatologist",
+      "advice": "Maintain a balanced diet and regular exercise. BMI status: Normal Weight. Fever check: High Fever. Symptoms noted: Cough, Headache, Itching. This system provides guidance only, not a medical diagnosis.",
+      "ai_suggestion": "CLINICAL GUIDANCE (PRELIMINARY)\nPriority: HIGH PRIORITY\nCurrent findings: Temperature 39.0 C (High Fever), BMI category Normal Weight, symptoms: Cough, Headache, Itching.\nMost suitable doctor: Dermatologist\n\nWhat to do now:\nSeek same-day in-person care or emergency support.\n- Hydrate well and take adequate rest.\n- Monitor temperature every 6-8 hours and note symptom changes.\n- Eat light, easy-to-digest meals until symptoms settle.\n- For fever discomfort, discuss safe antipyretic use with your pharmacist/doctor.\n\nGo to urgent care immediately if:\n- Breathing difficulty, chest pain, confusion, persistent vomiting.\n- Fever >= 103 F (39.4 C), seizure, severe dehydration, or worsening weakness.\n- Any rapid worsening despite initial home care.\n\nSupporting web check: Module 3 - Patient Intake And Vitals Flashcards | Quizlet: Recognize anxiety and talk to the patient about it. Listen and offer empathy. Help the patient relax. Suggest breathing techniques. | Definitions of Signs, Symptoms, and Conditions of Ill Travelers - CDC: Explanations and examples of signs and symptoms that might indicate communicable diseases.\n\nNote: This is supportive triage guidance, not a confirmed diagnosis."
+    }
   }
 ]
