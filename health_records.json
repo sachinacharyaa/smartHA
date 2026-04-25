@@ -1,0 +1,27 @@
+[
+  {
+    "created_at": "2026-04-25T13:09:09",
+    "user": {
+      "username": "sachinAC",
+      "logged_in_at": "2026-04-25T13:08:44"
+    },
+    "weight_kg": 8038.0,
+    "height_cm": 180.0,
+    "body_temp_c": 38.0,
+    "blood_group": "A+",
+    "hereditary_condition": "No",
+    "symptoms": [
+      "Fever",
+      "Cough",
+      "Chest pain"
+    ],
+    "result": {
+      "bmi": 2480.86,
+      "bmi_status": "Obese",
+      "fever_status": "Mild Fever",
+      "recommended_doctor": "Cardiologist",
+      "advice": "Consult a doctor for a structured weight management plan. BMI status: Obese. Fever check: Mild Fever. Symptoms noted: Fever, Cough, Chest pain. This system provides guidance only, not a medical diagnosis.",
+      "ai_suggestion": "Gemini quota exceeded for this API key/project. Enable billing or use a key with active quota."
+    }
+  }
+]

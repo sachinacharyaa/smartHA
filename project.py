@@ -1,5 +1,6 @@
 import json
 import tkinter as tk
+import threading
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -176,8 +177,8 @@ def build_app():
     storage = HealthStorage(DATA_FILE)
     root = tk.Tk()
     root.title("Health Assistant (BMI + Fever + Symptoms)")
-    root.geometry("980x760")
-    root.minsize(900, 700)
+    root.geometry("920x720")
+    root.minsize(860, 640)
 
     style = ttk.Style()
     style.theme_use("clam")
@@ -186,29 +187,43 @@ def build_app():
     style.configure("Section.TLabel", font=("Segoe UI Semibold", 11))
     style.configure("TButton", padding=6)
 
-    container = ttk.Frame(root, padding=16)
-    container.pack(fill="both", expand=True)
-    container.columnconfigure(0, weight=1)
-
-    ttk.Label(container, text="Health Consultation Assistant", style="Header.TLabel").grid(
-        row=0, column=0, sticky="w", pady=(0, 6)
-    )
-    ttk.Label(container, text="Login, enter health details, and get result based on selected symptoms.").grid(
-        row=1, column=0, sticky="w", pady=(0, 14)
-    )
+    page_container = ttk.Frame(root, padding=16)
+    page_container.pack(fill="both", expand=True)
+    page_container.rowconfigure(0, weight=1)
+    page_container.columnconfigure(0, weight=1)
 
     current_user = {"session": None}
+    active_job = {"thread": None}
 
-    login_frame = ttk.LabelFrame(container, text="Login")
-    login_frame.grid(row=2, column=0, sticky="ew", pady=(0, 12))
-    login_frame.columnconfigure(1, weight=1)
-    login_frame.columnconfigure(2, weight=1)
+    login_page = ttk.Frame(page_container)
+    login_page.grid(row=0, column=0, sticky="nsew")
+    login_page.columnconfigure(0, weight=1)
+    login_page.rowconfigure(1, weight=1)
+
+    form_page = ttk.Frame(page_container)
+    form_page.grid(row=0, column=0, sticky="nsew")
+    form_page.columnconfigure(0, weight=1)
+    form_page.rowconfigure(1, weight=1)
+
+    def show_page(page: ttk.Frame):
+        page.tkraise()
+
+    login_card = ttk.LabelFrame(login_page, text="Secure Login", padding=18)
+    login_card.grid(row=1, column=0, sticky="n", pady=(30, 0), ipadx=20, ipady=8)
+    login_card.columnconfigure(1, weight=1)
 
     username_var = tk.StringVar()
-    login_status_var = tk.StringVar(value="Not logged in")
+    login_status_var = tk.StringVar(value="Please login to continue")
+    user_status_var = tk.StringVar(value="Not logged in")
 
-    ttk.Label(login_frame, text="Username").grid(row=0, column=0, sticky="w", padx=8, pady=8)
-    ttk.Entry(login_frame, textvariable=username_var).grid(row=0, column=1, columnspan=2, sticky="ew", padx=8, pady=8)
+    ttk.Label(login_page, text="Health Consultation Assistant", style="Header.TLabel").grid(
+        row=0, column=0, sticky="w", pady=(0, 8)
+    )
+    ttk.Label(login_page, text="Professional health intake workflow").grid(row=0, column=0, sticky="e", pady=(0, 8))
+
+    ttk.Label(login_card, text="Username").grid(row=0, column=0, sticky="w", padx=8, pady=8)
+    ttk.Entry(login_card, textvariable=username_var, width=34).grid(row=0, column=1, sticky="ew", padx=8, pady=8)
+    ttk.Label(login_card, textvariable=login_status_var).grid(row=1, column=0, columnspan=2, sticky="w", padx=8, pady=(0, 8))
 
     def do_login():
         username = username_var.get().strip()
@@ -216,13 +231,21 @@ def build_app():
             messagebox.showerror("Login Error", "Username is required.")
             return
         current_user["session"] = UserLogin(username=username)
-        login_status_var.set(f"Logged in as {username}")
+        user_status_var.set(f"Logged in as {username}")
+        login_status_var.set("Login successful. Opening patient intake...")
+        show_page(form_page)
 
-    ttk.Button(login_frame, text="Login", command=do_login).grid(row=0, column=3, sticky="ew", padx=8, pady=8)
-    ttk.Label(login_frame, textvariable=login_status_var).grid(row=1, column=0, columnspan=4, sticky="w", padx=8, pady=(0, 8))
+    ttk.Button(login_card, text="Login", command=do_login).grid(row=2, column=0, columnspan=2, sticky="ew", padx=8, pady=8)
 
-    input_frame = ttk.LabelFrame(container, text="Health Inputs")
-    input_frame.grid(row=3, column=0, sticky="nsew", pady=(0, 12))
+    top_frame = ttk.Frame(form_page)
+    top_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
+    top_frame.columnconfigure(0, weight=1)
+    top_frame.columnconfigure(1, weight=1)
+    ttk.Label(top_frame, text="Patient Intake Form", style="Header.TLabel").grid(row=0, column=0, sticky="w")
+    ttk.Label(top_frame, textvariable=user_status_var, style="Section.TLabel").grid(row=0, column=1, sticky="e")
+
+    input_frame = ttk.LabelFrame(form_page, text="Health Inputs")
+    input_frame.grid(row=1, column=0, sticky="nsew", pady=(0, 12))
     input_frame.columnconfigure(1, weight=1)
     input_frame.columnconfigure(3, weight=1)
 
@@ -266,8 +289,8 @@ def build_app():
     check_result_button = ttk.Button(input_frame, text="Check Result", command=lambda: calculate_and_save())
     check_result_button.grid(row=4, column=0, columnspan=4, sticky="ew", padx=8, pady=(4, 10))
 
-    output_frame = ttk.LabelFrame(container, text="Result")
-    output_frame.grid(row=4, column=0, sticky="nsew", pady=(0, 12))
+    output_frame = ttk.LabelFrame(form_page, text="Latest Saved Result")
+    output_frame.grid(row=2, column=0, sticky="nsew", pady=(0, 12))
     output_frame.columnconfigure(0, weight=1)
 
     result_box = tk.Text(output_frame, height=15, wrap="word")
@@ -275,7 +298,7 @@ def build_app():
     result_box.config(state="disabled")
 
     storage_var = tk.StringVar(value=f"Stored records: {len(storage.records)}")
-    ttk.Label(container, textvariable=storage_var).grid(row=5, column=0, sticky="w")
+    ttk.Label(form_page, textvariable=storage_var).grid(row=3, column=0, sticky="w")
 
     def set_result_text(text: str):
         result_box.config(state="normal")
@@ -293,18 +316,10 @@ def build_app():
             var.set(False)
         set_result_text("")
 
-    def calculate_and_save():
-        if current_user["session"] is None:
-            messagebox.showwarning("Login Required", "Please login first.")
-            return
-
-        try:
-            height_cm = safe_float(height_cm_var.get(), "Height")
-            weight_kg = safe_float(weight_kg_var.get(), "Weight")
-            temp_c = safe_float(temp_c_var.get(), "Body temperature")
-        except ValueError as exc:
-            messagebox.showerror("Invalid Input", str(exc))
-            return
+    def calculate_record():
+        height_cm = safe_float(height_cm_var.get(), "Height")
+        weight_kg = safe_float(weight_kg_var.get(), "Weight")
+        temp_c = safe_float(temp_c_var.get(), "Body temperature")
 
         height_m = height_cm / 100.0
         bmi = weight_kg / (height_m * height_m)
@@ -346,30 +361,96 @@ def build_app():
             symptoms=symptoms,
             result=result,
         )
-        storage.add(record)
-        storage_var.set(f"Stored records: {len(storage.records)}")
+        return record
 
-        output_text = (
-            "HEALTH REPORT\n"
-            f"User: {record.user.username}\n"
-            f"Date: {record.created_at}\n"
-            f"BMI: {record.result.bmi} ({record.result.bmi_status})\n"
-            f"Fever Check: {record.result.fever_status}\n"
-            f"Recommended Doctor: {record.result.recommended_doctor}\n"
-            f"Blood Group: {record.blood_group}\n"
-            f"Hereditary Condition: {record.hereditary_condition or 'None'}\n"
-            f"Symptoms: {', '.join(record.symptoms) if record.symptoms else 'None'}\n\n"
-            f"Advice:\n{record.result.advice}\n\n"
-            f"Gemini Suggestion:\n{record.result.ai_suggestion}\n"
+    def calculate_and_save():
+        if current_user["session"] is None:
+            messagebox.showwarning("Login Required", "Please login first.")
+            show_page(login_page)
+            return
+        if active_job["thread"] and active_job["thread"].is_alive():
+            messagebox.showinfo("Please wait", "A result is already being generated.")
+            return
+
+        loading = tk.Toplevel(root)
+        loading.title("Preparing Result")
+        loading.geometry("420x170")
+        loading.resizable(False, False)
+        loading.transient(root)
+        loading.grab_set()
+
+        ttk.Label(loading, text="Analyzing symptoms and preparing report...", style="Section.TLabel").pack(
+            fill="x", padx=18, pady=(20, 10)
         )
-        set_result_text(output_text)
+        ttk.Label(loading, text="Please wait").pack(fill="x", padx=18, pady=(0, 8))
+        progress = ttk.Progressbar(loading, mode="indeterminate")
+        progress.pack(fill="x", padx=18, pady=(0, 16))
+        progress.start(10)
+        check_result_button.config(state="disabled")
 
-    button_frame = ttk.Frame(container)
-    button_frame.grid(row=6, column=0, sticky="ew")
+        result_holder = {"record": None, "error": None}
+
+        def worker():
+            try:
+                result_holder["record"] = calculate_record()
+            except Exception as exc:
+                result_holder["error"] = exc
+
+        def finalize():
+            if thread.is_alive():
+                root.after(100, finalize)
+                return
+
+            progress.stop()
+            loading.destroy()
+            check_result_button.config(state="normal")
+            active_job["thread"] = None
+
+            if result_holder["error"] is not None:
+                err = result_holder["error"]
+                if isinstance(err, ValueError):
+                    messagebox.showerror("Invalid Input", str(err))
+                else:
+                    messagebox.showerror("Processing Error", f"Failed to generate result: {err}")
+                return
+
+            record = result_holder["record"]
+            storage.add(record)
+            storage_var.set(f"Stored records: {len(storage.records)}")
+
+            output_text = (
+                "HEALTH REPORT\n"
+                f"User: {record.user.username}\n"
+                f"Date: {record.created_at}\n"
+                f"BMI: {record.result.bmi} ({record.result.bmi_status})\n"
+                f"Fever Check: {record.result.fever_status}\n"
+                f"Recommended Doctor: {record.result.recommended_doctor}\n"
+                f"Blood Group: {record.blood_group}\n"
+                f"Hereditary Condition: {record.hereditary_condition or 'None'}\n"
+                f"Symptoms: {', '.join(record.symptoms) if record.symptoms else 'None'}\n\n"
+                f"Advice:\n{record.result.advice}\n\n"
+                f"Gemini Suggestion:\n{record.result.ai_suggestion}\n"
+            )
+            set_result_text(output_text)
+            messagebox.showinfo("Result Ready", "Your health report is ready.")
+
+        thread = threading.Thread(target=worker, daemon=True)
+        active_job["thread"] = thread
+        thread.start()
+        root.after(100, finalize)
+
+    button_frame = ttk.Frame(form_page)
+    button_frame.grid(row=4, column=0, sticky="ew")
     button_frame.columnconfigure(0, weight=1)
     button_frame.columnconfigure(1, weight=1)
-    ttk.Button(button_frame, text="Clear", command=clear_fields).grid(row=0, column=0, padx=(0, 6), sticky="ew")
-    ttk.Button(button_frame, text="Exit", command=root.destroy).grid(row=0, column=1, padx=(6, 0), sticky="ew")
+    ttk.Button(button_frame, text="Back to Login", command=lambda: show_page(login_page)).grid(
+        row=0, column=0, padx=(0, 6), sticky="ew"
+    )
+    ttk.Button(button_frame, text="Clear", command=clear_fields).grid(row=0, column=1, padx=(6, 6), sticky="ew")
+    ttk.Button(button_frame, text="Exit", command=root.destroy).grid(row=0, column=2, padx=(6, 0), sticky="ew")
+    button_frame.columnconfigure(2, weight=1)
+
+    show_page(login_page)
 
     return root
 
