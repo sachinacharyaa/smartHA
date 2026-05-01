@@ -1,6 +1,12 @@
 This Smart Health Assistant project uses multiple core Python concepts to build a complete application.
 Object-Oriented Programming (OOP) is applied using classes such as HealthRecord, HealthResult, and UserLogin
-to organize and manage data effectively. Encapsulation is used to structure user and health data securely within classes.
+to organize and manage data effectively. Encapsulation is used to structure user and health data securely within classes
+
+
+Updated: History Dashboard by login through past user exist 
+After Update
+
+<img width="1139" height="591" alt="image" src="https://github.com/user-attachments/assets/cda49c7e-5a0d-4d06-9158-86d2a3ce6cb1" />
 
 The project also uses Data Structures, mainly lists and dictionaries, to store symptoms and health records.
 File Handling (JSON) is used to save and retrieve user data permanently. Functions are used to perform tasks
