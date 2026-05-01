@@ -200,5 +200,82 @@
       "advice": "Maintain a balanced diet and regular exercise. BMI status: Normal Weight. Fever check: High Fever. Symptoms noted: Cough, Headache, Itching. This system provides guidance only, not a medical diagnosis.",
       "ai_suggestion": "CLINICAL GUIDANCE (PRELIMINARY)\nPriority: HIGH PRIORITY\nCurrent findings: Temperature 39.0 C (High Fever), BMI category Normal Weight, symptoms: Cough, Headache, Itching.\nMost suitable doctor: Dermatologist\n\nWhat to do now:\nSeek same-day in-person care or emergency support.\n- Hydrate well and take adequate rest.\n- Monitor temperature every 6-8 hours and note symptom changes.\n- Eat light, easy-to-digest meals until symptoms settle.\n- For fever discomfort, discuss safe antipyretic use with your pharmacist/doctor.\n\nGo to urgent care immediately if:\n- Breathing difficulty, chest pain, confusion, persistent vomiting.\n- Fever >= 103 F (39.4 C), seizure, severe dehydration, or worsening weakness.\n- Any rapid worsening despite initial home care.\n\nSupporting web check: Module 3 - Patient Intake And Vitals Flashcards | Quizlet: Recognize anxiety and talk to the patient about it. Listen and offer empathy. Help the patient relax. Suggest breathing techniques. | Definitions of Signs, Symptoms, and Conditions of Ill Travelers - CDC: Explanations and examples of signs and symptoms that might indicate communicable diseases.\n\nNote: This is supportive triage guidance, not a confirmed diagnosis."
     }
+  },
+  {
+    "created_at": "2026-04-26T07:42:05",
+    "user": {
+      "username": "Sujan",
+      "logged_in_at": "2026-04-26T07:41:33"
+    },
+    "weight_kg": 76.0,
+    "height_cm": 180.0,
+    "body_temp_c": 40.0,
+    "blood_group": "B+",
+    "hereditary_condition": "No",
+    "symptoms": [
+      "Fever",
+      "Chest pain",
+      "Itching"
+    ],
+    "result": {
+      "bmi": 23.46,
+      "bmi_status": "Normal Weight",
+      "fever_status": "High Fever",
+      "recommended_doctor": "Cardiologist",
+      "advice": "Maintain a balanced diet and regular exercise. BMI status: Normal Weight. Fever check: High Fever. Symptoms noted: Fever, Chest pain, Itching. This system provides guidance only, not a medical diagnosis.",
+      "ai_suggestion": "CLINICAL GUIDANCE (PRELIMINARY)\nPriority: HIGH PRIORITY\nCurrent findings: Temperature 40.0 C (High Fever), BMI category Normal Weight, symptoms: Fever, Chest pain, Itching.\nMost suitable doctor: Cardiologist\n\nWhat to do now:\nSeek same-day in-person care or emergency support.\n- Hydrate well and take adequate rest.\n- Monitor temperature every 6-8 hours and note symptom changes.\n- Eat light, easy-to-digest meals until symptoms settle.\n- For fever discomfort, discuss safe antipyretic use with your pharmacist/doctor.\n\nGo to urgent care immediately if:\n- Breathing difficulty, chest pain, confusion, persistent vomiting.\n- Fever >= 103 F (39.4 C), seizure, severe dehydration, or worsening weakness.\n- Any rapid worsening despite initial home care.\n\nSupporting web check: When to Seek Care for a Fever | Hackensack Meridian Health: \u201cIf a fever lasts for more than three days, spikes above 103\u00b0F, or is accompanied by symptoms like confusion, difficulty breathing or a rash, ... | Fever - Symptoms & causes - Mayo Clinic: A fever is a temporary rise in body temperature. It's one part of an overall response from the body's immune system. A fever is usually caused by an infection.\n\nNote: This is supportive triage guidance, not a confirmed diagnosis."
+    }
+  },
+  {
+    "created_at": "2026-05-01T20:39:33",
+    "user": {
+      "username": "kamal",
+      "logged_in_at": "2026-05-01T20:39:12"
+    },
+    "weight_kg": 73.0,
+    "height_cm": 180.0,
+    "body_temp_c": 41.0,
+    "blood_group": "A+",
+    "hereditary_condition": "No",
+    "symptoms": [
+      "Fever",
+      "Chest pain",
+      "Headache",
+      "Body weakness"
+    ],
+    "result": {
+      "bmi": 22.53,
+      "bmi_status": "Normal Weight",
+      "fever_status": "High Fever",
+      "recommended_doctor": "Cardiologist",
+      "advice": "Maintain a balanced diet and regular exercise. BMI status: Normal Weight. Fever check: High Fever. Symptoms noted: Fever, Chest pain, Headache, Body weakness. This system provides guidance only, not a medical diagnosis.",
+      "ai_suggestion": "CLINICAL GUIDANCE (PRELIMINARY)\nPriority: HIGH PRIORITY\nCurrent findings: Temperature 41.0 C (High Fever), BMI category Normal Weight, symptoms: Fever, Chest pain, Headache, Body weakness.\nMost suitable doctor: Cardiologist\n\nWhat to do now:\nSeek same-day in-person care or emergency support.\n- Hydrate well and take adequate rest.\n- Monitor temperature every 6-8 hours and note symptom changes.\n- Eat light, easy-to-digest meals until symptoms settle.\n- For fever discomfort, discuss safe antipyretic use with your pharmacist/doctor.\n\nGo to urgent care immediately if:\n- Breathing difficulty, chest pain, confusion, persistent vomiting.\n- Fever >= 103 F (39.4 C), seizure, severe dehydration, or worsening weakness.\n- Any rapid worsening despite initial home care.\n\nSupporting web check: When to go to Urgent Care for a Fever: When is a Fever Serious?: Head to the ER if your fever reaches 105\u00b0F or higher or if you have severe additional symptoms or chronic conditions. These symptoms include ... | Fever - Symptoms & causes - Mayo Clinic: Call your health care provider if your temperature is 103 F (39.4 C) or higher. Seek immediate medical attention if any of these signs or symptoms accompanies a ...\n\nNote: This is supportive triage guidance, not a confirmed diagnosis."
+    }
+  },
+  {
+    "created_at": "2026-05-01T20:40:48",
+    "user": {
+      "username": "Kamal",
+      "logged_in_at": "2026-05-01T20:40:22"
+    },
+    "weight_kg": 75.0,
+    "height_cm": 180.0,
+    "body_temp_c": 39.0,
+    "blood_group": "A+",
+    "hereditary_condition": "No",
+    "symptoms": [
+      "Cough",
+      "Headache",
+      "Stomach pain",
+      "Vomiting"
+    ],
+    "result": {
+      "bmi": 23.15,
+      "bmi_status": "Normal Weight",
+      "fever_status": "High Fever",
+      "recommended_doctor": "Neurologist",
+      "advice": "Maintain a balanced diet and regular exercise. BMI status: Normal Weight. Fever check: High Fever. Symptoms noted: Cough, Headache, Stomach pain, Vomiting. This system provides guidance only, not a medical diagnosis.",
+      "ai_suggestion": "CLINICAL GUIDANCE (PRELIMINARY)\nPriority: HIGH PRIORITY\nCurrent findings: Temperature 39.0 C (High Fever), BMI category Normal Weight, symptoms: Cough, Headache, Stomach pain, Vomiting.\nMost suitable doctor: Neurologist\n\nWhat to do now:\nSeek same-day in-person care or emergency support.\n- Hydrate well and take adequate rest.\n- Monitor temperature every 6-8 hours and note symptom changes.\n- Eat light, easy-to-digest meals until symptoms settle.\n- For fever discomfort, discuss safe antipyretic use with your pharmacist/doctor.\n\nGo to urgent care immediately if:\n- Breathing difficulty, chest pain, confusion, persistent vomiting.\n- Fever >= 103 F (39.4 C), seizure, severe dehydration, or worsening weakness.\n- Any rapid worsening despite initial home care.\n\nSupporting web check: When to go to Urgent Care for a Fever: When is a Fever Serious?: Serious fever symptoms include a stiff neck, seizures, confusion, extreme fatigue, severe headache, chest pain, rash, abdominal pain, persistent ... | Fever \u2014 Know When to Go to the ER - Emergency Physicians: Seek immediate medical attention if your symptoms include: Pain or tenderness in the abdomen; Nausea or vomiting; Severe headache; Stiff neck that\n\nNote: This is supportive triage guidance, not a confirmed diagnosis."
+    }
   }
 ]

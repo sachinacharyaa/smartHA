@@ -290,6 +290,11 @@ def build_app():
     form_page.columnconfigure(0, weight=1)
     form_page.rowconfigure(1, weight=1)
 
+    history_page = ttk.Frame(page_container)
+    history_page.grid(row=0, column=0, sticky="nsew")
+    history_page.columnconfigure(0, weight=1)
+    history_page.rowconfigure(2, weight=1)
+
     def show_page(page: ttk.Frame):
         page.tkraise()
 
@@ -310,6 +315,11 @@ def build_app():
     ttk.Entry(login_card, textvariable=username_var, width=34).grid(row=0, column=1, sticky="ew", padx=8, pady=8)
     ttk.Label(login_card, textvariable=login_status_var).grid(row=1, column=0, columnspan=2, sticky="w", padx=8, pady=(0, 8))
 
+    login_action_frame = ttk.Frame(login_card)
+    login_action_frame.grid(row=2, column=0, columnspan=2, sticky="ew", padx=8, pady=(4, 8))
+    login_action_frame.columnconfigure(0, weight=1)
+    login_action_frame.columnconfigure(1, weight=1)
+
     def do_login():
         username = username_var.get().strip()
         if not username:
@@ -320,7 +330,23 @@ def build_app():
         login_status_var.set("Login successful. Opening patient intake...")
         show_page(form_page)
 
-    ttk.Button(login_card, text="Login", command=do_login).grid(row=2, column=0, columnspan=2, sticky="ew", padx=8, pady=8)
+    selected_history_username = {"value": ""}
+
+    def open_history_page():
+        username = username_var.get().strip()
+        if not username:
+            messagebox.showwarning("Username Required", "Enter username first to view that user's past records.")
+            return
+        selected_history_username["value"] = username
+        refresh_history_dashboard(username_filter=username)
+        show_page(history_page)
+
+    ttk.Button(login_action_frame, text="Login to Get Suggestion", command=do_login).grid(
+        row=0, column=0, padx=(0, 6), sticky="ew"
+    )
+    ttk.Button(login_action_frame, text="See Past Records", command=open_history_page).grid(
+        row=0, column=1, padx=(6, 0), sticky="ew"
+    )
 
     top_frame = ttk.Frame(form_page)
     top_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
@@ -384,6 +410,157 @@ def build_app():
 
     storage_var = tk.StringVar(value=f"Stored records: {len(storage.records)}")
     ttk.Label(form_page, textvariable=storage_var).grid(row=3, column=0, sticky="w")
+
+    history_header = ttk.Frame(history_page)
+    history_header.grid(row=0, column=0, sticky="ew", pady=(0, 10))
+    history_header.columnconfigure(0, weight=1)
+    history_header.columnconfigure(1, weight=1)
+    ttk.Label(history_header, text="History Dashboard", style="Header.TLabel").grid(row=0, column=0, sticky="w")
+    ttk.Label(
+        history_header,
+        text="Track BMI trend, fever trend, and repeated symptoms",
+        style="Section.TLabel",
+    ).grid(row=0, column=1, sticky="e")
+
+    history_summary_var = tk.StringVar(value="No records yet.")
+    ttk.Label(history_page, textvariable=history_summary_var).grid(row=1, column=0, sticky="w", pady=(0, 8))
+
+    history_table_frame = ttk.LabelFrame(history_page, text="Past Records")
+    history_table_frame.grid(row=2, column=0, sticky="nsew", pady=(0, 12))
+    history_table_frame.columnconfigure(0, weight=1)
+    history_table_frame.rowconfigure(0, weight=1)
+
+    history_columns = ("date", "user", "bmi", "fever", "symptoms", "doctor")
+    history_tree = ttk.Treeview(history_table_frame, columns=history_columns, show="headings", height=16)
+    history_tree.grid(row=0, column=0, sticky="nsew")
+    history_scroll = ttk.Scrollbar(history_table_frame, orient="vertical", command=history_tree.yview)
+    history_scroll.grid(row=0, column=1, sticky="ns")
+    history_tree.configure(yscrollcommand=history_scroll.set)
+    history_tree.heading("date", text="Date")
+    history_tree.heading("user", text="User")
+    history_tree.heading("bmi", text="BMI")
+    history_tree.heading("fever", text="Fever")
+    history_tree.heading("symptoms", text="Symptoms")
+    history_tree.heading("doctor", text="Doctor")
+    history_tree.column("date", width=145, anchor="w")
+    history_tree.column("user", width=110, anchor="w")
+    history_tree.column("bmi", width=70, anchor="center")
+    history_tree.column("fever", width=95, anchor="center")
+    history_tree.column("symptoms", width=320, anchor="w")
+    history_tree.column("doctor", width=170, anchor="w")
+
+    history_detail_frame = ttk.LabelFrame(history_page, text="Selected Record Detail")
+    history_detail_frame.grid(row=3, column=0, sticky="nsew", pady=(0, 12))
+    history_detail_frame.columnconfigure(0, weight=1)
+    history_detail_text = tk.Text(history_detail_frame, height=10, wrap="word")
+    history_detail_text.grid(row=0, column=0, sticky="nsew", padx=8, pady=8)
+    history_detail_text.config(state="disabled")
+
+    history_row_details = {}
+
+    def set_history_detail(text: str):
+        history_detail_text.config(state="normal")
+        history_detail_text.delete("1.0", "end")
+        history_detail_text.insert("1.0", text)
+        history_detail_text.config(state="disabled")
+
+    def refresh_history_dashboard(username_filter: str = ""):
+        for item in history_tree.get_children():
+            history_tree.delete(item)
+        history_row_details.clear()
+        set_history_detail("Select a record to see full detail.")
+
+        filter_key = username_filter.strip().lower()
+
+        if not storage.records:
+            history_summary_var.set("No records yet. Login and generate your first health suggestion.")
+            return
+
+        bmi_values = []
+        fever_counts = {"High Fever": 0, "Mild Fever": 0, "No Fever": 0}
+        symptom_counts = {}
+
+        matching_records = []
+        for raw_record in storage.records:
+            record_username = ((raw_record.get("user") or {}).get("username") or "").strip().lower()
+            if filter_key and record_username != filter_key:
+                continue
+            matching_records.append(raw_record)
+
+        if not matching_records:
+            history_summary_var.set(
+                f"No records found for '{username_filter}'. Please check the username and try again."
+            )
+            return
+
+        # Show newest records first for quick review.
+        for raw_record in reversed(matching_records):
+            result = raw_record.get("result", {})
+            user = raw_record.get("user", {})
+            symptoms = raw_record.get("symptoms", [])
+            bmi = result.get("bmi", "")
+            fever = result.get("fever_status", "Unknown")
+            doctor = result.get("recommended_doctor", "General Physician")
+            date = raw_record.get("created_at", "")
+            item_id = history_tree.insert(
+                "",
+                "end",
+                values=(
+                    date,
+                    user.get("username", "Unknown"),
+                    bmi,
+                    fever,
+                    ", ".join(symptoms) if symptoms else "None",
+                    doctor,
+                ),
+            )
+            history_row_details[item_id] = raw_record
+
+            try:
+                bmi_values.append(float(bmi))
+            except (TypeError, ValueError):
+                pass
+            if fever in fever_counts:
+                fever_counts[fever] += 1
+            for symptom in symptoms:
+                symptom_counts[symptom] = symptom_counts.get(symptom, 0) + 1
+
+        avg_bmi = (sum(bmi_values) / len(bmi_values)) if bmi_values else 0.0
+        top_symptoms = sorted(symptom_counts.items(), key=lambda item: item[1], reverse=True)[:3]
+        top_symptoms_text = ", ".join(f"{name} ({count})" for name, count in top_symptoms) if top_symptoms else "None"
+
+        history_summary_var.set(
+            "Records: "
+            f"{len(matching_records)} | User: {username_filter} | Avg BMI: {avg_bmi:.2f} | "
+            f"Fever trend - High: {fever_counts['High Fever']}, Mild: {fever_counts['Mild Fever']}, None: {fever_counts['No Fever']} | "
+            f"Top symptoms: {top_symptoms_text}"
+        )
+
+    def on_history_select(_event=None):
+        selected = history_tree.selection()
+        if not selected:
+            return
+        raw_record = history_row_details.get(selected[0])
+        if not raw_record:
+            return
+        result = raw_record.get("result", {})
+        detail_text = (
+            f"Date: {raw_record.get('created_at', '')}\n"
+            f"User: {(raw_record.get('user') or {}).get('username', 'Unknown')}\n"
+            f"Height/Weight: {raw_record.get('height_cm', '')} cm / {raw_record.get('weight_kg', '')} kg\n"
+            f"Temperature: {raw_record.get('body_temp_c', '')} C\n"
+            f"BMI: {result.get('bmi', '')} ({result.get('bmi_status', '')})\n"
+            f"Fever: {result.get('fever_status', '')}\n"
+            f"Blood Group: {raw_record.get('blood_group', '')}\n"
+            f"Hereditary Condition: {raw_record.get('hereditary_condition', '')}\n"
+            f"Recommended Doctor: {result.get('recommended_doctor', '')}\n"
+            f"Symptoms: {', '.join(raw_record.get('symptoms') or []) or 'None'}\n\n"
+            f"Advice:\n{result.get('advice', '')}\n\n"
+            f"Clinical Guidance:\n{result.get('ai_suggestion', '')}\n"
+        )
+        set_history_detail(detail_text)
+
+    history_tree.bind("<<TreeviewSelect>>", on_history_select)
 
     def set_result_text(text: str):
         result_box.config(state="normal")
@@ -511,6 +688,7 @@ def build_app():
             record = result_holder["record"]
             storage.add(record)
             storage_var.set(f"Stored records: {len(storage.records)}")
+            refresh_history_dashboard(username_filter=selected_history_username["value"])
 
             output_text = (
                 "HEALTH REPORT\n"
@@ -543,6 +721,21 @@ def build_app():
     ttk.Button(button_frame, text="Clear", command=clear_fields).grid(row=0, column=1, padx=(6, 6), sticky="ew")
     ttk.Button(button_frame, text="Exit", command=root.destroy).grid(row=0, column=2, padx=(6, 0), sticky="ew")
     button_frame.columnconfigure(2, weight=1)
+
+    history_button_frame = ttk.Frame(history_page)
+    history_button_frame.grid(row=4, column=0, sticky="ew")
+    history_button_frame.columnconfigure(0, weight=1)
+    history_button_frame.columnconfigure(1, weight=1)
+    ttk.Button(
+        history_button_frame,
+        text="Refresh",
+        command=lambda: refresh_history_dashboard(username_filter=selected_history_username["value"]),
+    ).grid(
+        row=0, column=0, padx=(0, 6), sticky="ew"
+    )
+    ttk.Button(history_button_frame, text="Back to Login", command=lambda: show_page(login_page)).grid(
+        row=0, column=1, padx=(6, 0), sticky="ew"
+    )
 
     show_page(login_page)
 
